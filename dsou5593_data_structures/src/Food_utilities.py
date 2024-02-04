@@ -5,7 +5,7 @@ Food class utility functions.
 Author:  Ryan D'Souza
 ID:      169065593
 Email:   dsou5593@mylaurier.ca
-__updated__ = "2024-01-13"
+__updated__ = "2024-01-21"
 -------------------------------------------------------
 """
 
@@ -138,5 +138,140 @@ def get_vegetarian(foods):
     -------------------------------------------------------
     """
 
-    veggies = [food_instance for food_instance in foods if food_instance.is_vegetarian]
+    veggies = [
+        food_instance for food_instance in foods if food_instance.is_vegetarian]
     return veggies
+
+
+def by_origin(foods, origin):
+    """
+    -------------------------------------------------------
+    Creates a list of Food objects by origin.
+    foods is unchanged.
+    Use: o_foods = by_origin(foods, origin)
+    -------------------------------------------------------
+    Parameters:
+        foods - a list of Food objects (list of Food)
+        origin - a food origin (int)
+    Returns:
+        origins - Food objects from foods that are of a particular origin (list of Food)
+    -------------------------------------------------------
+    """
+    assert origin in range(len(Food.ORIGIN))
+
+    origins = [food for food in foods if food.origin == origin]
+
+    return origins
+
+
+def average_calories(foods):
+    """
+    -------------------------------------------------------
+    Determines the average calories in a list of Foods objects.
+    foods is unchanged.
+    Use: avg = average_calories(foods)
+    -------------------------------------------------------
+    Parameters:
+        foods - a list of Food objects (list of Food)
+    Returns:
+        avg - average calories in all Food objects of foods (int)
+    -------------------------------------------------------
+    """
+
+    total_calories = sum(food.calories for food in foods)
+    num_items = len(foods)
+
+    avg = total_calories / num_items if num_items > 0 else 0
+
+    return avg
+
+
+def calories_by_origin(foods, origin):
+    """
+    -------------------------------------------------------
+    Determines the average calories in a list of Foods objects.
+    foods is unchanged.
+    Use: by_origin = calories_by_origin(foods, origin)
+    -------------------------------------------------------
+    Parameters:
+        foods - a list of Food objects (list of Food)
+        origin - the origin of the Food objects to find (int)
+    Returns:
+        avg - average calories for all Foods of the requested origin (int)
+    -------------------------------------------------------
+    """
+    assert origin in range(len(Food.ORIGIN))
+
+    matching_foods = [food for food in foods if food.origin == origin]
+
+    total_calories = sum(food.calories for food in matching_foods)
+    num_items = len(matching_foods)
+
+    avg = total_calories / num_items if num_items > 0 else 0
+
+    return avg
+
+
+def food_table(foods):
+    """
+    -------------------------------------------------------
+    Prints a formatted table of Food objects, sorted by name.
+    foods is unchanged.
+    Use: food_table(foods)
+    -------------------------------------------------------
+    Parameters:
+        foods - a list of Food objects (list of Food)
+    Returns:
+        None
+    -------------------------------------------------------
+    """
+
+    sorted_foods = sorted(foods, key=lambda food: food.name)
+
+    max_name_length = max(len(food.name) for food in sorted_foods)
+    max_origin_length = max(len(str(food.origin)) for food in sorted_foods)
+    max_calories_length = len("Calories")
+
+    max_vegetarian_length = len("Vegetarian")
+
+    print(f"{ 'Food':<{max_name_length}}  {'Origin':<{max_origin_length}}  {'Vegetarian':<{max_vegetarian_length}}  {'Calories':<{max_calories_length}}")
+    print("-" * (max_name_length + max_origin_length +
+          max_vegetarian_length + max_calories_length + 6))
+
+    for food in sorted_foods:
+        print(
+            f"{food.name:<{max_name_length}}  {Food.ORIGIN[food.origin]:<{max_origin_length}}  {str(food.is_vegetarian):<{max_vegetarian_length}}  {food.calories:<{max_calories_length}}")
+
+    return
+
+
+def food_search(foods, origin, max_cals, is_veg):
+    """
+    -------------------------------------------------------
+    Searches for Food objects that fit certain conditions.
+    foods is unchanged.
+    Use: results = food_search(foods, origin, max_cals, is_veg)
+    -------------------------------------------------------
+    Parameters:
+        foods - a list of Food objects (list of Food)
+        origin - the origin of the food; if -1, accept any origin (int)
+        max_cals - the maximum calories for the food; if 0, accept any calories value (int)
+        is_veg - whether the food is vegetarian or not; if False accept any food (boolean)
+    Returns:
+        result - a list of foods that fit the conditions (list of Food)
+            foods parameter must be unchanged
+    -------------------------------------------------------
+    """
+    assert origin in range(-1, len(Food.ORIGIN))
+
+    result = []
+
+    for food in foods:
+        origin_condition = origin == -1 or food.origin == origin
+        max_cals_condition = max_cals == 0 or food.calories <= max_cals
+        is_veg_condition = not is_veg or food.is_vegetarian  # Corrected attribute name
+
+        if origin_condition and max_cals_condition and is_veg_condition:
+            result.append(food)
+
+    return result
